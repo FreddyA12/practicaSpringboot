@@ -5,6 +5,49 @@
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
         http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.8.xsd">
-    
+    <changeSet id="1" author="Freddy">
+        <createTable tableName="customers">
+            <column name="id" type="bigInt" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"></constraints>
+            </column>
+            <column name="identification_type" type="varchar(50)">
+                <constraints nullable="false"></constraints>
+            </column>
+            <column name="identification_number" type="varchar(13)">
+                <constraints nullable="false" unique="true"></constraints>
+            </column>
+            <column name="names" type="varchar(100)">
+                <constraints nullable="false"></constraints>
+            </column>
+            <column name="email" type="varchar(100)">
+                <constraints nullable="false"></constraints>
+            </column>
+            <column name="phone_number" type="varchar(15)">
+                <constraints nullable="false"></constraints>
+            </column>
+        </createTable>
+        <createTable tableName="addresses">
+            <column name="id" type="bigInt" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"></constraints>
+            </column>
+            <column name="principal" type="boolean">
+                <constraints nullable="false"></constraints>
+            </column>
+            <column name="province" type="varchar(100)">
+                <constraints nullable="false"></constraints>
+            </column>
+            <column name="city" type="varchar(100)">
+                <constraints nullable="false"></constraints>
+            </column>
+            <column name="address" type="varchar(100)">
+                <constraints nullable="false"></constraints>
+            </column>
+            <column name="customer_id" type="bigInt">
+                <constraints nullable="false" foreignKeyName="fk_addresses_customers" references="customers(id)"></constraints>
+            </column>
+        </createTable>
+
+
+    </changeSet>
 
 </databaseChangeLog>
