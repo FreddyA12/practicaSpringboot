@@ -7,10 +7,12 @@ import com.practica.practicaRest.services.AddressService;
 import com.practica.practicaRest.services.CustomerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.modelmapper.ModelMapper;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
+@Service
 public class AddressServiceImpl implements AddressService {
     @Autowired
     private AddressRepository addressRepository;
