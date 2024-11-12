@@ -11,4 +11,5 @@ import java.util.List;
 public interface CustomerRepository  extends JpaRepository<Customer,Long> {
     List<Customer> findByNamesContaining(String names);
     List<Customer> findByIdentificationNumberContaining(String identificationNumber);
+    List<Customer> findByIdentificationNumber(String identificationNumber);
 }

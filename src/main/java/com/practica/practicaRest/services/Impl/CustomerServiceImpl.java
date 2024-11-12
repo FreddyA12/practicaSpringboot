@@ -10,7 +10,9 @@ import com.practica.practicaRest.services.CustomerService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -44,10 +46,38 @@ public class CustomerServiceImpl implements CustomerService {
 
     }
 
+    @Override
+    public CustomerDto saveCustomer(CustomerDto customerDto) {
+        //Verificar que no tenga el mismo numero
+        List<Customer> customers = customerRepository.findByIdentificationNumber(customerDto.getIdentificationNumber());
+        if (!customers.isEmpty()){
+            throw new ResponseStatusException(HttpStatus.PRECONDITION_FAILED, "Identification Number already exists");
+        }else {
+            //Guardar el cliente
+            Customer customer = customerRepository.save(dtoToCustomer(customerDto));
+            //Guardar la direccion
+            AddressDto addressDto = AddressDto.builder()
+                    .principal(true)
+                    .address(customerDto.getMainAddress())
+                    .customerId(customer.getId())
+                    .province(customerDto.getMainProvince())
+                    .city(customerDto.getMainCity()).build();
+            AddressDto addressDto1 = addressService.newAddress(addressDto);
+            //Asignar la drieccion principal y retornar
+            CustomerDto customerDto1 = customerToDto(customer);
+            customerDto1.setMainAddress(addressDto1.getAddress());
+            customerDto1.setMainCity(addressDto1.getCity());
+            customerDto1.setMainProvince(addressDto1.getProvince());
+            return customerDto1;
+        }
+    }
+
     private CustomerDto customerToDto(Customer customer){
         return modelMapper.map(customer, CustomerDto.class);
     }
-
+    private Customer dtoToCustomer(CustomerDto customerDto){
+        return this.modelMapper.map(customerDto, Customer.class);
+    }
     private CustomerDto addPrincipalAddress(Customer customer){
         AddressDto address = addressService.searchPrincipalAddress(customer.getId());
         CustomerDto customerDto = modelMapper.map(customer, CustomerDto.class);
