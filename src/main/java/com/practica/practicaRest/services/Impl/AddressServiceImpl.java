@@ -34,13 +34,6 @@ public class AddressServiceImpl implements AddressService {
         return addressRepository.findByCustomerId(customerId).stream().map(this::addressToDto).collect(Collectors.toList());
     }
 
-    @Override
-    public void deleteAddress(Long addressId) {
-        Address address = this.addressRepository.findById(addressId).orElse(null);
-        if (address != null){
-            addressRepository.delete(address);
-        }
-    }
 
     @Override
     public AddressDto searchPrincipalAddress(Long idAutor) {
