@@ -2,6 +2,7 @@ package com.practica.practicaRest.controllers;
 
 import com.practica.practicaRest.dtos.CustomerDto;
 import com.practica.practicaRest.services.CustomerService;
+import jakarta.websocket.server.PathParam;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -28,5 +29,10 @@ public class CustomerController {
     @PutMapping
     public CustomerDto editCustomer(@RequestBody CustomerDto customerDto){
         return customerService.editCustomer(customerDto);
+    }
+
+    @DeleteMapping("/{id}")
+    public void deleteCustomer(@PathVariable Long id){
+        customerService.deleteCustomer(id);
     }
 }

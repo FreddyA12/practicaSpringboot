@@ -82,7 +82,6 @@ public class CustomerServiceImpl implements CustomerService {
         Customer customer = customerRepository.findById(customerDto.getId())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.PRECONDITION_FAILED, "Customer doesn't exist"));
 
-
         //Verificar que no tenga el mismo numero solo si se va a editar eso
         if (customerDto.getIdentificationNumber()!=null){
             List<Customer> customers = customerRepository.findByIdentificationNumber(customerDto.getIdentificationNumber());
@@ -118,6 +117,13 @@ public class CustomerServiceImpl implements CustomerService {
         return customerDto1;
 
 
+    }
+
+    @Override
+    public void deleteCustomer(Long id) {
+        Customer customer = customerRepository.findById(id).orElseThrow(
+                ()-> new ResponseStatusException(HttpStatus.PRECONDITION_FAILED, "Customer doesn't exist"));
+        customerRepository.delete(customer);
     }
 
     private CustomerDto customerToDto(Customer customer){
