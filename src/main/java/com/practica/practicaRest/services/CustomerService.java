@@ -9,4 +9,5 @@ import java.util.List;
 public interface CustomerService {
     List<CustomerDto> searchCustomers(String identificationNumber, String name);
     CustomerDto saveCustomer(CustomerDto customerDto);
+    CustomerDto editCustomer(CustomerDto customerDto);
 }

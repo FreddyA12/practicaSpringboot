@@ -24,4 +24,9 @@ public class CustomerController {
     public CustomerDto saveCustomer(@RequestBody CustomerDto customerDto){
         return customerService.saveCustomer(customerDto);
     }
+
+    @PutMapping
+    public CustomerDto editCustomer(@RequestBody CustomerDto customerDto){
+        return customerService.editCustomer(customerDto);
+    }
 }

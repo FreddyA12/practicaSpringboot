@@ -72,6 +72,54 @@ public class CustomerServiceImpl implements CustomerService {
         }
     }
 
+    @Override
+    public CustomerDto editCustomer(CustomerDto customerDto) {
+        //Verificar que tenga un id
+        if (customerDto.getId() == null){
+            throw new ResponseStatusException(HttpStatus.PRECONDITION_FAILED, "Send an id");
+        }
+        //Obtener el customer
+        Customer customer = customerRepository.findById(customerDto.getId())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.PRECONDITION_FAILED, "Customer doesn't exist"));
+
+
+        //Verificar que no tenga el mismo numero solo si se va a editar eso
+        if (customerDto.getIdentificationNumber()!=null){
+            List<Customer> customers = customerRepository.findByIdentificationNumber(customerDto.getIdentificationNumber());
+            if (!customers.isEmpty() ) {
+                throw new ResponseStatusException(HttpStatus.PRECONDITION_FAILED, "Identification Number already exists");
+            }
+            customer.setIdentificationNumber(customerDto.getIdentificationNumber());
+        }
+            //Compara campos vacios y asigna
+        if (customerDto.getNames()!=null){
+            customer.setNames(customerDto.getNames());
+        }
+        if (customerDto.getIdentificationType()!=null){
+            customer.setIdentificationType(customerDto.getIdentificationType());
+        }
+        if (customerDto.getPhoneNumber()!=null){
+            customer.setPhoneNumber(customerDto.getPhoneNumber());
+        }
+        if (customerDto.getEmail()!=null){
+            customer.setEmail(customerDto.getEmail());
+        }
+
+        //Edita el cliente
+        customer = customerRepository.save(customer);
+
+        //Dto para devolver el cliente
+        //Asignar la drieccion principal y retornar
+        AddressDto addressDto = addressService.searchPrincipalAddress(customer.getId());
+        CustomerDto customerDto1 = customerToDto(customer);
+        customerDto1.setMainAddress(addressDto.getAddress());
+        customerDto1.setMainCity(addressDto.getCity());
+        customerDto1.setMainProvince(addressDto.getProvince());
+        return customerDto1;
+
+
+    }
+
     private CustomerDto customerToDto(Customer customer){
         return modelMapper.map(customer, CustomerDto.class);
     }
