@@ -20,7 +20,7 @@ public class Address {
     private String province;
     private String city;
     private String address;
-    @ManyToOne()
-    @JoinColumn(name = "customer_id")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "customer_id" )
     private Customer customer;
 }

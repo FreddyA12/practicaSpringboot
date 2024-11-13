@@ -14,12 +14,12 @@ public class AddressController {
     private AddressService addressService;
 
     @PostMapping
-    public AddressDto newAditionalAddress(@RequestBody AddressDto addressDto){
+    public AddressDto createAditionalAddress(@RequestBody AddressDto addressDto){
         addressDto.setPrincipal(false);
         return addressService.newAddress(addressDto);
     }
     @GetMapping("/{id}")
-    public List<AddressDto> addressesOfCustomer(@PathVariable Long id){
-        return addressService.searchByCustomer(id);
+    public List<AddressDto> getAddressesByCustomer(@PathVariable Long costumerId){
+        return addressService.searchByCustomer(costumerId);
     }
 }

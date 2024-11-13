@@ -29,6 +29,6 @@ public class Customer {
     private String email;
     @Column(name = "phone_number")
     private String phoneNumber;
-    @OneToMany(mappedBy = "customer", orphanRemoval = true)
+    @OneToMany(mappedBy = "customer", orphanRemoval = true ,fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<Address> listAddresses = new ArrayList<>();
 }

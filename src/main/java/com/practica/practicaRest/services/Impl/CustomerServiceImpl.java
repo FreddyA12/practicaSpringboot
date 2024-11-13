@@ -53,21 +53,24 @@ public class CustomerServiceImpl implements CustomerService {
         if (!customers.isEmpty()){
             throw new ResponseStatusException(HttpStatus.PRECONDITION_FAILED, "Identification Number already exists");
         }else {
-            //Guardar el cliente
-            Customer customer = customerRepository.save(dtoToCustomer(customerDto));
-            //Guardar la direccion
-            AddressDto addressDto = AddressDto.builder()
+
+            Customer customer =dtoToCustomer(customerDto);
+            //Asigna la direccion al cliente
+            Address address = Address.builder()
                     .principal(true)
                     .address(customerDto.getMainAddress())
-                    .customerId(customer.getId())
+                    .customer(customer)
                     .province(customerDto.getMainProvince())
                     .city(customerDto.getMainCity()).build();
-            AddressDto addressDto1 = addressService.newAddress(addressDto);
+            customer.getListAddresses().add(address);
+            //Guardar el cliente
+            customer = customerRepository.save(dtoToCustomer(customerDto));
+
             //Asignar la drieccion principal y retornar
             CustomerDto customerDto1 = customerToDto(customer);
-            customerDto1.setMainAddress(addressDto1.getAddress());
-            customerDto1.setMainCity(addressDto1.getCity());
-            customerDto1.setMainProvince(addressDto1.getProvince());
+            customerDto1.setMainAddress(address.getAddress());
+            customerDto1.setMainCity(address.getCity());
+            customerDto1.setMainProvince(address.getProvince());
             return customerDto1;
         }
     }
