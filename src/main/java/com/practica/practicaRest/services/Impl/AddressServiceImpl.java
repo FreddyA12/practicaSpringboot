@@ -7,7 +7,9 @@ import com.practica.practicaRest.services.AddressService;
 import com.practica.practicaRest.services.CustomerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.modelmapper.ModelMapper;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -24,8 +26,7 @@ public class AddressServiceImpl implements AddressService {
     }
 
     @Override
-    public AddressDto newAddress(AddressDto addressDto) {
-
+    public AddressDto createAddress(AddressDto addressDto) {
         Address address = addressRepository.save(this.dtoToAddress(addressDto));
         return this.addressToDto(address);
     }
@@ -40,12 +41,10 @@ public class AddressServiceImpl implements AddressService {
     public AddressDto searchPrincipalAddress(Long idAutor) {
         List<Address> addresses =  addressRepository.findByCustomerId(idAutor);
         if (addresses.isEmpty()){
-            //Error Exception
-        }else{
-            //Return the first
+            throw new ResponseStatusException(HttpStatus.PRECONDITION_FAILED, "No Principal Address Asigned");
+        }else {
+            return this.addressToDto(addresses.stream().filter(address -> address.isPrincipal()).collect(Collectors.toList()).get(0));
         }
-
-        return this.addressToDto(addresses.stream().filter(address-> address.isPrincipal()).collect(Collectors.toList()).get(0));
     }
 
     public AddressDto addressToDto(Address address){

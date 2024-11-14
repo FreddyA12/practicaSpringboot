@@ -31,11 +31,11 @@ public class AddressControllerTest {
         AddressDto addressDto = TestData.getInstance().addressDto();
         addressDto.setPrincipal(false);
 
-        when(addressService.newAddress(any(AddressDto.class))).thenReturn(addressDto);
+        when(addressService.createAddress(any(AddressDto.class))).thenReturn(addressDto);
         //Act
         AddressDto result =addressController.createAditionalAddress(addressDto);
         //Assert
-        verify(addressService, times(1)).newAddress(any());
+        verify(addressService, times(1)).createAddress(any());
         Assertions.assertThat(result).isNotNull();
     }
     @Test

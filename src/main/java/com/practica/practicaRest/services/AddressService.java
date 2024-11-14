@@ -5,7 +5,7 @@ import com.practica.practicaRest.dtos.AddressDto;
 import java.util.List;
 
 public interface AddressService {
-    AddressDto newAddress( AddressDto addressDto);
+    AddressDto createAddress( AddressDto addressDto);
     List<AddressDto> searchByCustomer(Long customerId);
 
     AddressDto searchPrincipalAddress(Long customerId);

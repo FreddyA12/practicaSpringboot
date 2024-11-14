@@ -16,7 +16,7 @@ public class AddressController {
     @PostMapping
     public AddressDto createAditionalAddress(@RequestBody AddressDto addressDto){
         addressDto.setPrincipal(false);
-        return addressService.newAddress(addressDto);
+        return addressService.createAddress(addressDto);
     }
     @GetMapping("/{id}")
     public List<AddressDto> getAddressesByCustomer(@PathVariable Long costumerId){
