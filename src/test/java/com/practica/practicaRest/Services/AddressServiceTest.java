@@ -2,7 +2,7 @@ package com.practica.practicaRest.Services;
 
 import com.practica.practicaRest.Utils.TestData;
 import com.practica.practicaRest.dtos.AddressDto;
-import com.practica.practicaRest.dtos.CustomerDto;
+
 import com.practica.practicaRest.entities.Address;
 import com.practica.practicaRest.repositories.AddressRepository;
 import com.practica.practicaRest.services.AddressService;
@@ -17,9 +17,15 @@ import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.convention.MatchingStrategies;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.server.ResponseStatusException;
 
+
+
+import java.util.ArrayList;
 import java.util.List;
 
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
@@ -89,5 +95,21 @@ public class AddressServiceTest {
         Assertions.assertThat(addresses.get(0).getCustomer().getId()).isEqualTo(response.getCustomerId());
         Assertions.assertThat(addresses.get(0).isPrincipal()).isEqualTo(response.isPrincipal());
     }
+    @Test
+    void shouldFailSearchPrincipalAddress() {
+        // Arrange
+        List<Address> addresses = new ArrayList<>();
+        when(addressRepository.findByCustomerId(any())).thenReturn(addresses);
+
+        // Act y Assert
+        ResponseStatusException responseStatusException = assertThrows(
+                ResponseStatusException.class, () ->addressService.searchPrincipalAddress(any())
+        );
+        Assertions.assertThat(responseStatusException.getStatusCode()).isEqualTo(HttpStatus.PRECONDITION_FAILED);
+        Assertions.assertThat(responseStatusException.getMessage()).contains("No Principal Address Asigned");
+        
+
+    }
+
 
 }
