@@ -35,6 +35,7 @@ public class AddressServiceTest {
     private AddressRepository addressRepository;
     @InjectMocks
     private AddressService addressService = new AddressServiceImpl();
+
     @Spy
     private ModelMapper modelMapper;
     @BeforeEach
@@ -107,7 +108,7 @@ public class AddressServiceTest {
         );
         Assertions.assertThat(responseStatusException.getStatusCode()).isEqualTo(HttpStatus.PRECONDITION_FAILED);
         Assertions.assertThat(responseStatusException.getMessage()).contains("No Principal Address Asigned");
-        
+
 
     }
 

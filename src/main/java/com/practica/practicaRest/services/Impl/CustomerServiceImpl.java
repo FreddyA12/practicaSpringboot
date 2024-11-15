@@ -41,9 +41,7 @@ public class CustomerServiceImpl implements CustomerService {
             //find by identificationNumber
             customerList =  customerRepository.findByIdentificationNumberContaining(identificationNumber);
         }
-
         return customerList.stream().map(this::addPrincipalAddress).collect(Collectors.toList());
-
     }
 
     @Override
@@ -64,7 +62,7 @@ public class CustomerServiceImpl implements CustomerService {
                     .city(customerDto.getMainCity()).build();
             customer.getListAddresses().add(address);
             //Guardar el cliente
-            customer = customerRepository.save(dtoToCustomer(customerDto));
+            customer = customerRepository.save(customer);
 
             //Asignar la drieccion principal y retornar
             CustomerDto customerDto1 = customerToDto(customer);
