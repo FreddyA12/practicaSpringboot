@@ -1,11 +1,10 @@
 package com.practica.practicaRest.Services;
 
 import com.practica.practicaRest.Utils.TestData;
-import com.practica.practicaRest.dtos.AddressDto;
-import com.practica.practicaRest.dtos.CustomerDto;
 import com.practica.practicaRest.entities.Address;
+import com.practica.practicaRest.presenters.AddressPresenter;
+import com.practica.practicaRest.presenters.CustomerPresenter;
 import com.practica.practicaRest.entities.Customer;
-import com.practica.practicaRest.repositories.AddressRepository;
 import com.practica.practicaRest.repositories.CustomerRepository;
 import com.practica.practicaRest.services.AddressService;
 import com.practica.practicaRest.services.CustomerService;
@@ -53,11 +52,11 @@ public class CustomerServiceTest {
     void shouldSearchCustomersByIdentificationNumber(){
         //Arrange
         List<Customer> customerList = List.of(TestData.getInstance().customer());
-        AddressDto address = TestData.getInstance().addressDto();
+        AddressPresenter address = TestData.getInstance().addressDto();
         when(customerRepository.findByIdentificationNumberContaining(any())).thenReturn(customerList);
-        when(addressService.searchPrincipalAddress(any())).thenReturn(address);
+
         //Act
-        List<CustomerDto> response = customerService.searchCustomers("18",null);
+        List<CustomerPresenter> response = customerService.searchCustomers("18",null);
         //Assert
         verify(customerRepository,times(1)).findByIdentificationNumberContaining(any());
         Assertions.assertThat(customerList.get(0).getId()).isEqualTo(response.get(0).getId());
@@ -73,11 +72,10 @@ public class CustomerServiceTest {
     void shouldSearchCustomersByName(){
         //Arrange
         List<Customer> customerList = List.of(TestData.getInstance().customer());
-        AddressDto address = TestData.getInstance().addressDto();
+        AddressPresenter address = TestData.getInstance().addressDto();
         when(customerRepository.findByNamesContaining(any())).thenReturn(customerList);
-        when(addressService.searchPrincipalAddress(any())).thenReturn(address);
         //Act
-        List<CustomerDto> response = customerService.searchCustomers(null,"none");
+        List<CustomerPresenter> response = customerService.searchCustomers(null,"none");
         //Assert
         verify(customerRepository,times(1)).findByNamesContaining(any());
         Assertions.assertThat(customerList.get(0).getId()).isEqualTo(response.get(0).getId());
@@ -94,11 +92,9 @@ public class CustomerServiceTest {
     void shouldSaveCustomer(){
         //Arrange
         Customer customer = TestData.getInstance().customer();
-        customer.setListAddresses(new ArrayList<>());
-        customer.getListAddresses().add(TestData.getInstance().address());
         when(customerRepository.save(any())).thenReturn(customer);
         //Act
-        CustomerDto response = customerService.saveCustomer(TestData.getInstance().customerDto());
+        CustomerPresenter response = customerService.saveCustomer(TestData.getInstance().customerDto());
         //Assert
         verify(customerRepository,times(1)).save(any());
         Assertions.assertThat(customer.getId()).isEqualTo(response.getId());
@@ -118,11 +114,11 @@ public class CustomerServiceTest {
     void shouldFailSaveCustomerWhenIdentificationNumberAlreadyExists() {
         // Arrange
         Customer customer = TestData.getInstance().customer();
-        CustomerDto customerDto = TestData.getInstance().customerDto();
+        CustomerPresenter customerPresenter = TestData.getInstance().customerDto();
         when(customerRepository.findByIdentificationNumber(any())).thenReturn(List.of(customer));
         // Act y Assert
         ResponseStatusException responseStatusException = assertThrows(
-                ResponseStatusException.class, () ->customerService.saveCustomer(customerDto)
+                ResponseStatusException.class, () ->customerService.saveCustomer(customerPresenter)
         );
         Assertions.assertThat(responseStatusException.getStatusCode()).isEqualTo(HttpStatus.PRECONDITION_FAILED);
         Assertions.assertThat(responseStatusException.getMessage()).contains("Identification Number already exists");
@@ -133,18 +129,18 @@ public class CustomerServiceTest {
     void shouldEditCustomer(){
         //Arrange
         Customer customer = TestData.getInstance().customer();
+        Address address = TestData.getInstance().address();
+        address.setPrincipal(true);
+        customer.setListAddresses(List.of(address));
         customer.setNames("TEST");
-        CustomerDto editado = TestData.getInstance().customerDto();
+        CustomerPresenter editado = TestData.getInstance().customerDto();
         editado.setNames("TEST");
-        customer.setListAddresses(new ArrayList<>());
-        customer.getListAddresses().add(TestData.getInstance().address());
         when(customerRepository.findById(1L)).thenReturn(Optional.of(customer));
         when(customerRepository.save(any())).thenReturn(customer);
         when(customerRepository.findByIdentificationNumber(any())).thenReturn(new ArrayList<>());
-        when(addressService.searchPrincipalAddress(any())).thenReturn(TestData.getInstance().addressDto());
 
         //Act
-        CustomerDto response = customerService.editCustomer(editado);
+        CustomerPresenter response = customerService.editCustomer(editado);
 
         //Assert
         verify(customerRepository,times(1)).save(any(Customer.class));
@@ -156,12 +152,12 @@ public class CustomerServiceTest {
     void shouldFailEditWhenNoId(){
         // Arrange
         Customer customer = TestData.getInstance().customer();
-        CustomerDto customerDto = TestData.getInstance().customerDto();
-        customerDto.setId(null);
+        CustomerPresenter customerPresenter = TestData.getInstance().customerDto();
+        customerPresenter.setId(null);
         //when(customerRepository.findByIdentificationNumber(any())).thenReturn(List.of(customer));
         // Act y Assert
         ResponseStatusException responseStatusException = assertThrows(
-                ResponseStatusException.class, () ->customerService.editCustomer(customerDto)
+                ResponseStatusException.class, () ->customerService.editCustomer(customerPresenter)
         );
         Assertions.assertThat(responseStatusException.getStatusCode()).isEqualTo(HttpStatus.PRECONDITION_FAILED);
         Assertions.assertThat(responseStatusException.getMessage()).contains("Send an id");
@@ -172,12 +168,12 @@ public class CustomerServiceTest {
     void shouldFailEditWhenCustomerDoesntExist(){
         // Arrange
         Customer customer = TestData.getInstance().customer();
-        CustomerDto customerDto = TestData.getInstance().customerDto();
+        CustomerPresenter customerPresenter = TestData.getInstance().customerDto();
         when(customerRepository.findById(any())).thenReturn(Optional.empty());
 
         // Act y Assert
         ResponseStatusException responseStatusException = assertThrows(
-                ResponseStatusException.class, () ->customerService.editCustomer(customerDto)
+                ResponseStatusException.class, () ->customerService.editCustomer(customerPresenter)
         );
         Assertions.assertThat(responseStatusException.getStatusCode()).isEqualTo(HttpStatus.PRECONDITION_FAILED);
         Assertions.assertThat(responseStatusException.getMessage()).contains("Customer doesn't exist");
@@ -188,13 +184,13 @@ public class CustomerServiceTest {
     void shouldFailEditWhenIdentificationNumberAlreadyExist(){
         // Arrange
         Customer customer = TestData.getInstance().customer();
-        CustomerDto customerDto = TestData.getInstance().customerDto();
+        CustomerPresenter customerPresenter = TestData.getInstance().customerDto();
         when(customerRepository.findById(1L)).thenReturn(Optional.of(customer));
         when(customerRepository.findByIdentificationNumber(any())).thenReturn(List.of(customer));
 
         // Act y Assert
         ResponseStatusException responseStatusException = assertThrows(
-                ResponseStatusException.class, () ->customerService.editCustomer(customerDto)
+                ResponseStatusException.class, () ->customerService.editCustomer(customerPresenter)
         );
         Assertions.assertThat(responseStatusException.getStatusCode()).isEqualTo(HttpStatus.PRECONDITION_FAILED);
         Assertions.assertThat(responseStatusException.getMessage()).contains("Identification Number already exists");

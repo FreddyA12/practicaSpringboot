@@ -1,7 +1,5 @@
-package com.practica.practicaRest.dtos;
+package com.practica.practicaRest.presenters;
 
-import com.practica.practicaRest.entities.Customer;
-import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -11,7 +9,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class AddressDto {
+public class AddressPresenter {
     private Long id;
     private boolean principal;
     private String province;

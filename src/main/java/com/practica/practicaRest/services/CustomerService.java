@@ -1,14 +1,13 @@
 package com.practica.practicaRest.services;
 
-import com.practica.practicaRest.dtos.CustomerDto;
-import org.springframework.stereotype.Service;
+import com.practica.practicaRest.presenters.CustomerPresenter;
 
 import java.util.List;
 
 
 public interface CustomerService {
-    List<CustomerDto> searchCustomers(String identificationNumber, String name);
-    CustomerDto saveCustomer(CustomerDto customerDto);
-    CustomerDto editCustomer(CustomerDto customerDto);
+    List<CustomerPresenter> searchCustomers(String identificationNumber, String name);
+    CustomerPresenter saveCustomer(CustomerPresenter customerPresenter);
+    CustomerPresenter editCustomer(CustomerPresenter customerPresenter);
     void deleteCustomer(Long id);
 }

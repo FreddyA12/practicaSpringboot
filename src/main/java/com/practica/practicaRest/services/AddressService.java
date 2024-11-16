@@ -1,12 +1,12 @@
 package com.practica.practicaRest.services;
 
-import com.practica.practicaRest.dtos.AddressDto;
+import com.practica.practicaRest.presenters.AddressPresenter;
 
 import java.util.List;
 
 public interface AddressService {
-    AddressDto createAddress( AddressDto addressDto);
-    List<AddressDto> searchByCustomer(Long customerId);
+    AddressPresenter createAddress(AddressPresenter addressPresenter);
+    List<AddressPresenter> searchByCustomer(Long customerId);
 
-    AddressDto searchPrincipalAddress(Long customerId);
+    AddressPresenter searchPrincipalAddress(Long customerId);
 }

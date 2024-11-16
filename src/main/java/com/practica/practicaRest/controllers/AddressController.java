@@ -1,6 +1,6 @@
 package com.practica.practicaRest.controllers;
 
-import com.practica.practicaRest.dtos.AddressDto;
+import com.practica.practicaRest.presenters.AddressPresenter;
 import com.practica.practicaRest.services.AddressService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -14,12 +14,12 @@ public class AddressController {
     private AddressService addressService;
 
     @PostMapping
-    public AddressDto createAditionalAddress(@RequestBody AddressDto addressDto){
-        addressDto.setPrincipal(false);
-        return addressService.createAddress(addressDto);
+    public AddressPresenter createAditionalAddress(@RequestBody AddressPresenter addressPresenter){
+        addressPresenter.setPrincipal(false);
+        return addressService.createAddress(addressPresenter);
     }
     @GetMapping("/{id}")
-    public List<AddressDto> getAddressesByCustomer(@PathVariable Long costumerId){
+    public List<AddressPresenter> getAddressesByCustomer(@PathVariable Long costumerId){
         return addressService.searchByCustomer(costumerId);
     }
 }

@@ -2,7 +2,7 @@ package com.practica.practicaRest.Controllers;
 
 import com.practica.practicaRest.Utils.TestData;
 import com.practica.practicaRest.controllers.CustomerController;
-import com.practica.practicaRest.dtos.CustomerDto;
+import com.practica.practicaRest.presenters.CustomerPresenter;
 import com.practica.practicaRest.services.CustomerService;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -25,10 +25,10 @@ public class CustomerControllerTest {
     @Test
     void shouldGetCustomersByIdOrName(){
         //Assert
-        List<CustomerDto> customerDtos = List.of(TestData.getInstance().customerDto());
-        when(customerService.searchCustomers(any(), any())).thenReturn(customerDtos);
+        List<CustomerPresenter> customerPresenters = List.of(TestData.getInstance().customerDto());
+        when(customerService.searchCustomers(any(), any())).thenReturn(customerPresenters);
         //Act
-        List<CustomerDto> response = customerController.getCustomersByIdOrName("","");
+        List<CustomerPresenter> response = customerController.getCustomersByIdOrName("","");
         //Arrange
         verify(customerService,times(1)).searchCustomers("","");
         Assertions.assertThat(response).isNotNull();
@@ -37,31 +37,31 @@ public class CustomerControllerTest {
     @Test
     void shouldSaveCustomer(){
         //Assert
-        CustomerDto customerDto = TestData.getInstance().customerDto();
-        when(customerService.saveCustomer(any(customerDto.getClass()))).thenReturn(customerDto);
+        CustomerPresenter customerPresenter = TestData.getInstance().customerDto();
+        when(customerService.saveCustomer(any(customerPresenter.getClass()))).thenReturn(customerPresenter);
         //Act
-        CustomerDto response = customerController.saveCustomer(customerDto);
+        CustomerPresenter response = customerController.saveCustomer(customerPresenter);
         //Arrange
-        verify(customerService,times(1)).saveCustomer(customerDto);
+        verify(customerService,times(1)).saveCustomer(customerPresenter);
         Assertions.assertThat(response).isNotNull();
     }
 
     @Test
     void shouldEditCustomer(){
         //Assert
-        CustomerDto customerDto = TestData.getInstance().customerDto();
-        when(customerService.editCustomer(any(customerDto.getClass()))).thenReturn(customerDto);
+        CustomerPresenter customerPresenter = TestData.getInstance().customerDto();
+        when(customerService.editCustomer(any(customerPresenter.getClass()))).thenReturn(customerPresenter);
         //Act
-        CustomerDto response = customerController.editCustomer(customerDto);
+        CustomerPresenter response = customerController.editCustomer(customerPresenter);
         //Arrange
-        verify(customerService,times(1)).editCustomer(customerDto);
+        verify(customerService,times(1)).editCustomer(customerPresenter);
         Assertions.assertThat(response).isNotNull();
     }
 
     @Test
     void shouldDeleteCustomer(){
         //Assert
-        CustomerDto customerDto = TestData.getInstance().customerDto();
+        CustomerPresenter customerPresenter = TestData.getInstance().customerDto();
         //Act
         customerController.deleteCustomer(1L);
         //Arrange

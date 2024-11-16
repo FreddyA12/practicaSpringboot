@@ -2,8 +2,7 @@ package com.practica.practicaRest.Controllers;
 
 import com.practica.practicaRest.Utils.TestData;
 import com.practica.practicaRest.controllers.AddressController;
-import com.practica.practicaRest.dtos.AddressDto;
-import com.practica.practicaRest.entities.Address;
+import com.practica.practicaRest.presenters.AddressPresenter;
 import com.practica.practicaRest.services.AddressService;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -28,12 +27,12 @@ public class AddressControllerTest {
     @Test
     void shouldCreateAditionalAddress(){
         //Arrange
-        AddressDto addressDto = TestData.getInstance().addressDto();
-        addressDto.setPrincipal(false);
+        AddressPresenter addressPresenter = TestData.getInstance().addressDto();
+        addressPresenter.setPrincipal(false);
 
-        when(addressService.createAddress(any(AddressDto.class))).thenReturn(addressDto);
+        when(addressService.createAddress(any(AddressPresenter.class))).thenReturn(addressPresenter);
         //Act
-        AddressDto result =addressController.createAditionalAddress(addressDto);
+        AddressPresenter result =addressController.createAditionalAddress(addressPresenter);
         //Assert
         verify(addressService, times(1)).createAddress(any());
         Assertions.assertThat(result).isNotNull();
@@ -41,10 +40,10 @@ public class AddressControllerTest {
     @Test
     void shouldGetAddressesByCustomer(){
         //Arrange
-        List<AddressDto> list = List.of(TestData.getInstance().addressDto());
+        List<AddressPresenter> list = List.of(TestData.getInstance().addressDto());
         when(addressService.searchByCustomer(any())).thenReturn(list);
         //Act
-        List<AddressDto> result = addressController.getAddressesByCustomer(1L);
+        List<AddressPresenter> result = addressController.getAddressesByCustomer(1L);
         //Assert
         verify(addressService,times(1)).searchByCustomer(1L);
         Assertions.assertThat(result).isNotNull();

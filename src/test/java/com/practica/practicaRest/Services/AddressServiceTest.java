@@ -1,7 +1,7 @@
 package com.practica.practicaRest.Services;
 
 import com.practica.practicaRest.Utils.TestData;
-import com.practica.practicaRest.dtos.AddressDto;
+import com.practica.practicaRest.presenters.AddressPresenter;
 
 import com.practica.practicaRest.entities.Address;
 import com.practica.practicaRest.repositories.AddressRepository;
@@ -47,10 +47,10 @@ public class AddressServiceTest {
     void shouldCreateAddress(){
         //Assert
         Address address = TestData.getInstance().address();
-        AddressDto addressDto = TestData.getInstance().addressDto();
+        AddressPresenter addressPresenter = TestData.getInstance().addressDto();
         when(addressRepository.save(any(Address.class))).thenReturn(address);
         //Act
-        AddressDto response = addressService.createAddress(addressDto);
+        AddressPresenter response = addressService.createAddress(addressPresenter);
         //Arrange
         verify(addressRepository,times(1)).save(any());
         Assertions.assertThat(address.getId()).isEqualTo(response.getId());
@@ -68,7 +68,7 @@ public class AddressServiceTest {
         List<Address> addresses = List.of(TestData.getInstance().address());
         when(addressRepository.findByCustomerId(any())).thenReturn(addresses);
         //Act
-        List<AddressDto> response = addressService.searchByCustomer(any());
+        List<AddressPresenter> response = addressService.searchByCustomer(any());
         //Arrange
         verify(addressRepository,times(1)).findByCustomerId(any());
         Assertions.assertThat(addresses.get(0).getCustomer().getId()).isEqualTo(response.get(0).getCustomerId());
@@ -86,7 +86,7 @@ public class AddressServiceTest {
         addresses.get(0).setPrincipal(true);
         when(addressRepository.findByCustomerId(any())).thenReturn(addresses);
         //Act
-        AddressDto response = addressService.searchPrincipalAddress(any());
+        AddressPresenter response = addressService.searchPrincipalAddress(any());
         //Arrange
         verify(addressRepository,times(1)).findByCustomerId(any());
         Assertions.assertThat(addresses.get(0).getId()).isEqualTo(response.getId());

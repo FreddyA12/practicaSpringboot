@@ -1,7 +1,7 @@
 package com.practica.practicaRest.services.Impl;
 
-import com.practica.practicaRest.dtos.AddressDto;
-import com.practica.practicaRest.dtos.CustomerDto;
+import com.practica.practicaRest.presenters.AddressPresenter;
+import com.practica.practicaRest.presenters.CustomerPresenter;
 import com.practica.practicaRest.entities.Address;
 import com.practica.practicaRest.entities.Customer;
 import com.practica.practicaRest.repositories.CustomerRepository;
@@ -32,7 +32,7 @@ public class CustomerServiceImpl implements CustomerService {
     }
 
     @Override
-    public List<CustomerDto> searchCustomers(String identificationNumber, String name) {
+    public List<CustomerPresenter> searchCustomers(String identificationNumber, String name) {
         List<Customer> customerList;
         if (identificationNumber == null){
             //find by name
@@ -45,77 +45,66 @@ public class CustomerServiceImpl implements CustomerService {
     }
 
     @Override
-    public CustomerDto saveCustomer(CustomerDto customerDto) {
+    public CustomerPresenter saveCustomer(CustomerPresenter customerPresenter) {
         //Verificar que no tenga el mismo numero
-        List<Customer> customers = customerRepository.findByIdentificationNumber(customerDto.getIdentificationNumber());
+        List<Customer> customers = customerRepository.findByIdentificationNumber(customerPresenter.getIdentificationNumber());
         if (!customers.isEmpty()){
             throw new ResponseStatusException(HttpStatus.PRECONDITION_FAILED, "Identification Number already exists");
         }else {
 
-            Customer customer =dtoToCustomer(customerDto);
+            Customer customer =presenterToCustomer(customerPresenter);
             //Asigna la direccion al cliente
             Address address = Address.builder()
                     .principal(true)
-                    .address(customerDto.getMainAddress())
+                    .address(customerPresenter.getMainAddress())
                     .customer(customer)
-                    .province(customerDto.getMainProvince())
-                    .city(customerDto.getMainCity()).build();
+                    .province(customerPresenter.getMainProvince())
+                    .city(customerPresenter.getMainCity()).build();
             customer.getListAddresses().add(address);
             //Guardar el cliente
             customer = customerRepository.save(customer);
 
-            //Asignar la drieccion principal y retornar
-            CustomerDto customerDto1 = customerToDto(customer);
-            customerDto1.setMainAddress(address.getAddress());
-            customerDto1.setMainCity(address.getCity());
-            customerDto1.setMainProvince(address.getProvince());
-            return customerDto1;
+            return customerToPresenter(customer);
         }
     }
 
     @Override
-    public CustomerDto editCustomer(CustomerDto customerDto) {
+    public CustomerPresenter editCustomer(CustomerPresenter customerPresenter) {
         //Verificar que tenga un id
-        if (customerDto.getId() == null){
+        if (customerPresenter.getId() == null){
             throw new ResponseStatusException(HttpStatus.PRECONDITION_FAILED, "Send an id");
         }
         //Obtener el customer
-        Customer customer = customerRepository.findById(customerDto.getId())
+        Customer customer = customerRepository.findById(customerPresenter.getId())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.PRECONDITION_FAILED, "Customer doesn't exist"));
 
         //Verificar que no tenga el mismo numero solo si se va a editar eso
-        if (customerDto.getIdentificationNumber()!=null){
-            List<Customer> customers = customerRepository.findByIdentificationNumber(customerDto.getIdentificationNumber());
+        if (customerPresenter.getIdentificationNumber()!=null){
+            List<Customer> customers = customerRepository.findByIdentificationNumber(customerPresenter.getIdentificationNumber());
             if (!customers.isEmpty() ) {
                 throw new ResponseStatusException(HttpStatus.PRECONDITION_FAILED, "Identification Number already exists");
             }
-            customer.setIdentificationNumber(customerDto.getIdentificationNumber());
+            customer.setIdentificationNumber(customerPresenter.getIdentificationNumber());
         }
             //Compara campos vacios y asigna
-        if (customerDto.getNames()!=null){
-            customer.setNames(customerDto.getNames());
+        if (customerPresenter.getNames()!=null){
+            customer.setNames(customerPresenter.getNames());
         }
-        if (customerDto.getIdentificationType()!=null){
-            customer.setIdentificationType(customerDto.getIdentificationType());
+        if (customerPresenter.getIdentificationType()!=null){
+            customer.setIdentificationType(customerPresenter.getIdentificationType());
         }
-        if (customerDto.getPhoneNumber()!=null){
-            customer.setPhoneNumber(customerDto.getPhoneNumber());
+        if (customerPresenter.getPhoneNumber()!=null){
+            customer.setPhoneNumber(customerPresenter.getPhoneNumber());
         }
-        if (customerDto.getEmail()!=null){
-            customer.setEmail(customerDto.getEmail());
+        if (customerPresenter.getEmail()!=null){
+            customer.setEmail(customerPresenter.getEmail());
         }
 
         //Edita el cliente
         customer = customerRepository.save(customer);
 
-        //Dto para devolver el cliente
-        //Asignar la drieccion principal y retornar
-        AddressDto addressDto = addressService.searchPrincipalAddress(customer.getId());
-        CustomerDto customerDto1 = customerToDto(customer);
-        customerDto1.setMainAddress(addressDto.getAddress());
-        customerDto1.setMainCity(addressDto.getCity());
-        customerDto1.setMainProvince(addressDto.getProvince());
-        return customerDto1;
+
+        return customerToPresenter(customer);
 
 
     }
@@ -127,18 +116,30 @@ public class CustomerServiceImpl implements CustomerService {
         customerRepository.delete(customer);
     }
 
-    private CustomerDto customerToDto(Customer customer){
-        return modelMapper.map(customer, CustomerDto.class);
+    private CustomerPresenter customerToPresenter(Customer customer){
+        CustomerPresenter customerPresenter1 = modelMapper.map(customer, CustomerPresenter.class);
+        Address address = findPrincipalAddress(customer);
+        customerPresenter1.setMainAddress(address.getAddress());
+        customerPresenter1.setMainCity(address.getCity());
+        customerPresenter1.setMainProvince(address.getProvince());
+        return customerPresenter1;
     }
-    private Customer dtoToCustomer(CustomerDto customerDto){
-        return this.modelMapper.map(customerDto, Customer.class);
+    private Customer presenterToCustomer(CustomerPresenter customerPresenter){
+        return this.modelMapper.map(customerPresenter, Customer.class);
     }
-    private CustomerDto addPrincipalAddress(Customer customer){
-        AddressDto address = addressService.searchPrincipalAddress(customer.getId());
-        CustomerDto customerDto = modelMapper.map(customer, CustomerDto.class);
-        customerDto.setMainCity(address.getCity());
-        customerDto.setMainProvince(address.getProvince());
-        customerDto.setMainAddress(address.getAddress());
-        return customerDto;
+    private CustomerPresenter addPrincipalAddress(Customer customer) {
+        Address address = findPrincipalAddress(customer);
+        CustomerPresenter customerPresenter = modelMapper.map(customer, CustomerPresenter.class);
+        customerPresenter.setMainCity(address.getCity());
+        customerPresenter.setMainProvince(address.getProvince());
+        customerPresenter.setMainAddress(address.getAddress());
+        return customerPresenter;
     }
+
+    private Address findPrincipalAddress(Customer customer) {
+        return customer.getListAddresses().stream().filter(Address::isPrincipal).findFirst().orElseThrow(() ->
+                new ResponseStatusException(HttpStatus.PRECONDITION_FAILED, "No principal address found"));
+    }
+
+
 }

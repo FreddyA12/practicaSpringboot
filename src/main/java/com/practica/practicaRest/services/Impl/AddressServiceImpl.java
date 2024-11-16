@@ -1,6 +1,6 @@
 package com.practica.practicaRest.services.Impl;
 
-import com.practica.practicaRest.dtos.AddressDto;
+import com.practica.practicaRest.presenters.AddressPresenter;
 import com.practica.practicaRest.entities.Address;
 import com.practica.practicaRest.repositories.AddressRepository;
 import com.practica.practicaRest.services.AddressService;
@@ -26,36 +26,35 @@ public class AddressServiceImpl implements AddressService {
     }
 
     @Override
-    public AddressDto createAddress(AddressDto addressDto) {
-        Address address = addressRepository.save(this.dtoToAddress(addressDto));
-        return this.addressToDto(address);
+    public AddressPresenter createAddress(AddressPresenter addressPresenter) {
+        Address address = addressRepository.save(this.presenterToAddress(addressPresenter));
+        return this.addressToPresenter(address);
     }
 
     @Override
-    public List<AddressDto> searchByCustomer(Long customerId) {
-        return addressRepository.findByCustomerId(customerId).stream().map(this::addressToDto).collect(Collectors.toList());
+    public List<AddressPresenter> searchByCustomer(Long customerId) {
+        return addressRepository.findByCustomerId(customerId).stream().map(this::addressToPresenter).collect(Collectors.toList());
     }
 
 
     @Override
-    public AddressDto searchPrincipalAddress(Long idAutor) {
+    public AddressPresenter searchPrincipalAddress(Long idAutor) {
         List<Address> addresses =  addressRepository.findByCustomerId(idAutor);
         if (addresses.isEmpty()){
             throw new ResponseStatusException(HttpStatus.PRECONDITION_FAILED, "No Principal Address Asigned");
         }else {
-            return this.addressToDto(addresses.stream().filter(address -> address.isPrincipal()).collect(Collectors.toList()).get(0));
+            return this.addressToPresenter(addresses.stream().filter(address -> address.isPrincipal()).collect(Collectors.toList()).get(0));
         }
     }
 
-    public AddressDto addressToDto(Address address){
-        AddressDto addressDto =  modelMapper.map(address, AddressDto.class);
-        addressDto.setCustomerId(address.getCustomer().getId());
-        return addressDto;
+    public AddressPresenter addressToPresenter(Address address){
+        AddressPresenter addressPresenter =  modelMapper.map(address, AddressPresenter.class);
+        addressPresenter.setCustomerId(address.getCustomer().getId());
+        return addressPresenter;
     }
 
-    public Address dtoToAddress(AddressDto  addressDto){
-        Address address = modelMapper.map(addressDto, Address.class);
-        //address.setCustomer(customerService.searchCustomer);
+    public Address presenterToAddress(AddressPresenter addressPresenter){
+        Address address = modelMapper.map(addressPresenter, Address.class);
         return address;
     }
 }

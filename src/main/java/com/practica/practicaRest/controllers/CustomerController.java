@@ -1,8 +1,7 @@
 package com.practica.practicaRest.controllers;
 
-import com.practica.practicaRest.dtos.CustomerDto;
+import com.practica.practicaRest.presenters.CustomerPresenter;
 import com.practica.practicaRest.services.CustomerService;
-import jakarta.websocket.server.PathParam;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -16,19 +15,19 @@ public class CustomerController {
     private CustomerService customerService;
 
     @GetMapping
-    public List<CustomerDto> getCustomersByIdOrName(@RequestParam (required = false) String identificationNumber,
-                                                    @RequestParam (required = false)  String name){
+    public List<CustomerPresenter> getCustomersByIdOrName(@RequestParam (required = false) String identificationNumber,
+                                                          @RequestParam (required = false)  String name){
         return customerService.searchCustomers(identificationNumber,name);
     }
 
     @PostMapping
-    public CustomerDto saveCustomer(@RequestBody CustomerDto customerDto){
-        return customerService.saveCustomer(customerDto);
+    public CustomerPresenter saveCustomer(@RequestBody CustomerPresenter customerPresenter){
+        return customerService.saveCustomer(customerPresenter);
     }
 
     @PutMapping
-    public CustomerDto editCustomer(@RequestBody CustomerDto customerDto){
-        return customerService.editCustomer(customerDto);
+    public CustomerPresenter editCustomer(@RequestBody CustomerPresenter customerPresenter){
+        return customerService.editCustomer(customerPresenter);
     }
 
     @DeleteMapping("/{id}")
