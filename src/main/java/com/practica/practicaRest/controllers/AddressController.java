@@ -18,8 +18,8 @@ public class AddressController {
         addressPresenter.setPrincipal(false);
         return addressService.createAddress(addressPresenter);
     }
-    @GetMapping("/{id}")
-    public List<AddressPresenter> getAddressesByCustomer(@PathVariable Long costumerId){
-        return addressService.searchByCustomer(costumerId);
+    @GetMapping("/{customerId}")
+    public List<AddressPresenter> getAddressesByCustomer(@PathVariable Long customerId){
+        return addressService.searchByCustomer(customerId);
     }
 }

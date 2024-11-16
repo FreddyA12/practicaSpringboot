@@ -1,5 +1,6 @@
 package com.practica.practicaRest.services.Impl;
 
+import com.practica.practicaRest.entities.Customer;
 import com.practica.practicaRest.presenters.AddressPresenter;
 import com.practica.practicaRest.entities.Address;
 import com.practica.practicaRest.repositories.AddressRepository;
@@ -54,7 +55,9 @@ public class AddressServiceImpl implements AddressService {
     }
 
     public Address presenterToAddress(AddressPresenter addressPresenter){
+        Customer customer = customerService.getCustomerById(addressPresenter.getCustomerId());
         Address address = modelMapper.map(addressPresenter, Address.class);
+        address.setCustomer(customer);
         return address;
     }
 }

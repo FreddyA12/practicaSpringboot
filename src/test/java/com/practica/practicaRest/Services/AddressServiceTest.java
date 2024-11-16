@@ -6,6 +6,7 @@ import com.practica.practicaRest.presenters.AddressPresenter;
 import com.practica.practicaRest.entities.Address;
 import com.practica.practicaRest.repositories.AddressRepository;
 import com.practica.practicaRest.services.AddressService;
+import com.practica.practicaRest.services.CustomerService;
 import com.practica.practicaRest.services.Impl.AddressServiceImpl;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -33,6 +34,10 @@ import static org.mockito.Mockito.*;
 public class AddressServiceTest {
     @Mock
     private AddressRepository addressRepository;
+
+    @Mock
+    private CustomerService customerService;
+
     @InjectMocks
     private AddressService addressService = new AddressServiceImpl();
 
@@ -49,6 +54,7 @@ public class AddressServiceTest {
         Address address = TestData.getInstance().address();
         AddressPresenter addressPresenter = TestData.getInstance().addressDto();
         when(addressRepository.save(any(Address.class))).thenReturn(address);
+        when(customerService.getCustomerById(any(Long.class))).thenReturn(TestData.getInstance().customer());
         //Act
         AddressPresenter response = addressService.createAddress(addressPresenter);
         //Arrange
@@ -80,21 +86,23 @@ public class AddressServiceTest {
     }
 
     @Test
-    void shouldSearchPrincipalAddress(){
-        //Assert
+    void shouldSearchPrincipalAddress() {
+        // Arrange
         List<Address> addresses = List.of(TestData.getInstance().address());
         addresses.get(0).setPrincipal(true);
-        when(addressRepository.findByCustomerId(any())).thenReturn(addresses);
-        //Act
-        AddressPresenter response = addressService.searchPrincipalAddress(any());
-        //Arrange
-        verify(addressRepository,times(1)).findByCustomerId(any());
-        Assertions.assertThat(addresses.get(0).getId()).isEqualTo(response.getId());
-        Assertions.assertThat(addresses.get(0).getAddress()).isEqualTo(response.getAddress());
-        Assertions.assertThat(addresses.get(0).getCity()).isEqualTo(response.getCity());
-        Assertions.assertThat(addresses.get(0).getProvince()).isEqualTo(response.getProvince());
-        Assertions.assertThat(addresses.get(0).getCustomer().getId()).isEqualTo(response.getCustomerId());
-        Assertions.assertThat(addresses.get(0).isPrincipal()).isEqualTo(response.isPrincipal());
+        when(addressRepository.findByCustomerId(any(Long.class))).thenReturn(addresses);
+
+        // Act
+        AddressPresenter response = addressService.searchPrincipalAddress(1L);
+
+        // Assert
+        verify(addressRepository, times(1)).findByCustomerId(any(Long.class));
+        Assertions.assertThat(response.getId()).isEqualTo(addresses.get(0).getId());
+        Assertions.assertThat(response.getAddress()).isEqualTo(addresses.get(0).getAddress());
+        Assertions.assertThat(response.getCity()).isEqualTo(addresses.get(0).getCity());
+        Assertions.assertThat(response.getProvince()).isEqualTo(addresses.get(0).getProvince());
+        Assertions.assertThat(response.getCustomerId()).isEqualTo(addresses.get(0).getCustomer().getId());
+        Assertions.assertThat(response.isPrincipal()).isEqualTo(addresses.get(0).isPrincipal());
     }
     @Test
     void shouldFailSearchPrincipalAddress() {

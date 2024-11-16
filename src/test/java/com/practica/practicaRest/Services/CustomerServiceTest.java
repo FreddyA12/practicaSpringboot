@@ -87,6 +87,35 @@ public class CustomerServiceTest {
 
     }
 
+    @Test
+    void shouldGetCustomerById(){
+        //Arrange
+        Customer customer = TestData.getInstance().customer();
+        when(customerRepository.findById(any())).thenReturn(Optional.of(customer));
+        //Act
+        Customer response = customerService.getCustomerById(1L);
+        //Assert
+        verify(customerRepository,times(1)).findById(any());
+        Assertions.assertThat(response.getId()).isEqualTo(customer.getId());
+        Assertions.assertThat(response.getIdentificationNumber()).isEqualTo(customer.getIdentificationNumber());
+        Assertions.assertThat(response.getNames()).isEqualTo(customer.getNames());
+
+    }
+
+    @Test
+    void shouldFailGetCustomerById(){
+        //Arrange
+        Customer customer = TestData.getInstance().customer();
+        when(customerRepository.findById(any())).thenReturn(Optional.empty());
+        //Act and Assert
+        ResponseStatusException responseStatusException = assertThrows(
+                ResponseStatusException.class, () ->customerService.getCustomerById(1L)
+        );
+        Assertions.assertThat(responseStatusException.getStatusCode()).isEqualTo(HttpStatus.PRECONDITION_FAILED);
+        Assertions.assertThat(responseStatusException.getMessage()).contains("Customer Not Found");
+
+    }
+
 
     @Test
     void shouldSaveCustomer(){

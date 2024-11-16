@@ -110,6 +110,12 @@ public class CustomerServiceImpl implements CustomerService {
     }
 
     @Override
+    public Customer getCustomerById(Long id) {
+        return this.customerRepository.findById(id).orElseThrow( () ->
+         new ResponseStatusException(HttpStatus.PRECONDITION_FAILED, "Customer Not Found"));
+    }
+
+    @Override
     public void deleteCustomer(Long id) {
         Customer customer = customerRepository.findById(id).orElseThrow(
                 ()-> new ResponseStatusException(HttpStatus.PRECONDITION_FAILED, "Customer doesn't exist"));

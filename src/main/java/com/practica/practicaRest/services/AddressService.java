@@ -7,6 +7,5 @@ import java.util.List;
 public interface AddressService {
     AddressPresenter createAddress(AddressPresenter addressPresenter);
     List<AddressPresenter> searchByCustomer(Long customerId);
-
     AddressPresenter searchPrincipalAddress(Long customerId);
 }
