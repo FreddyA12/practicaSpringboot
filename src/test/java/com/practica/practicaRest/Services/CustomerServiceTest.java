@@ -210,21 +210,41 @@ public class CustomerServiceTest {
     }
 
     @Test
-    void shouldFailEditWhenIdentificationNumberAlreadyExist(){
+    void shouldFailEditWhenIdentificationNumberAlreadyExists() {
         // Arrange
-        Customer customer = TestData.getInstance().customer();
+        // Cliente existente con el mismo número de identificación
+        Customer existingCustomer = TestData.getInstance().customer();
+        existingCustomer.setId(2L);
+        existingCustomer.setIdentificationNumber("999");
+
+        // Cliente que está siendo editado
+        Customer customerBeingEdited = TestData.getInstance().customer();
+        customerBeingEdited.setId(1L);
+        customerBeingEdited.setIdentificationNumber("111");
+
+        // DTO enviado para la actualización
         CustomerPresenter customerPresenter = TestData.getInstance().customerDto();
-        when(customerRepository.findById(1L)).thenReturn(Optional.of(customer));
-        when(customerRepository.findByIdentificationNumber(any())).thenReturn(List.of(customer));
+        customerPresenter.setId(1L);
+        customerPresenter.setIdentificationNumber("999");
 
-        // Act y Assert
-        ResponseStatusException responseStatusException = assertThrows(
-                ResponseStatusException.class, () ->customerService.editCustomer(customerPresenter)
+        // Configurar mocks
+        when(customerRepository.findById(1L)).thenReturn(Optional.of(customerBeingEdited));
+        when(customerRepository.findByIdentificationNumber(any()))
+                .thenReturn(List.of(existingCustomer));
+
+        // Act & Assert
+        ResponseStatusException exception = assertThrows(
+                ResponseStatusException.class,
+                () -> customerService.editCustomer(customerPresenter)
         );
-        Assertions.assertThat(responseStatusException.getStatusCode()).isEqualTo(HttpStatus.PRECONDITION_FAILED);
-        Assertions.assertThat(responseStatusException.getMessage()).contains("Identification Number already exists");
 
-    }
+        // Verificar la excepción
+        Assertions.assertThat(exception.getStatusCode()).isEqualTo(HttpStatus.PRECONDITION_FAILED);
+        Assertions.assertThat(exception.getReason()).isEqualTo("Identification Number already exists");
+
+       }
+
+
 
     @Test
     void shouldDeleteCustomer(){
