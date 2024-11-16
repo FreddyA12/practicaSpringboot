@@ -81,8 +81,10 @@ public class CustomerServiceImpl implements CustomerService {
         //Verificar que no tenga el mismo numero solo si se va a editar eso
         if (customerPresenter.getIdentificationNumber()!=null){
             List<Customer> customers = customerRepository.findByIdentificationNumber(customerPresenter.getIdentificationNumber());
-            if (!customers.isEmpty() ) {
-                throw new ResponseStatusException(HttpStatus.PRECONDITION_FAILED, "Identification Number already exists");
+            if (!customers.isEmpty()  ) {
+                if (!customers.get(0).getIdentificationNumber().equals(customer.getIdentificationNumber())) {
+                    throw new ResponseStatusException(HttpStatus.PRECONDITION_FAILED, "Identification Number already exists");
+                }
             }
             customer.setIdentificationNumber(customerPresenter.getIdentificationNumber());
         }

@@ -35,7 +35,7 @@
 - Solo los valores que se quieren editar*
   ```json, 
   {
-    "id" : "1"
+    "id" : "1",
     "identificationType": "RUC",
     "identificationNumber": "1805302760",
     "names": "Nadie Nadie",
@@ -54,10 +54,10 @@
      "province": "Pastaza",
     "city": "Puyo",
     "address": "Calle 1",
-    "customerId": 6
+    "customerId": 1
   }
 
 #### **Funcionalidad para listar las direcciones adicionales del cliente**
-- **Ruta:** `GET /address/{cuStomerId}`
+- **Ruta:** `GET /address/{customerId}`
 
 
